@@ -140,7 +140,7 @@
                     options.appendChild(option);
                 }
             } else {
-                let resultMessage = score > 40 ? "すばらしい！" : "";
+                let resultMessage = score > 25 ? "すばらしい！" : "";
                 document.getElementById("quiz").innerHTML = `<h2>クイズ終了！最終スコア: ${score}</h2><h3>${resultMessage}</h3><button onclick="restart()">再スタート</button>`;
             }
         }
@@ -158,7 +158,7 @@
                         document.getElementById("monster-image").src = monsterImages[currentMonster - 1];
                         updateHealthBar();
                     } else {
-                        let resultMessage = score > 40 ? "すばらしい！" : "";
+                        let resultMessage = score > 25 ? "すばらしい！" : "";
                         document.getElementById("quiz").innerHTML = `<h2>クイズ終了！最終スコア: ${score}</h2><h3>${resultMessage}</h3><button onclick="restart()">再スタート</button>`;
                         return;
                     }
@@ -167,9 +167,9 @@
                 }
             }
             currentQuestion++;
-            if (currentQuestion % 10 === 0 && currentMonster < 5) {
+            if (currentQuestion % 6 === 0 && currentMonster < 5) {
                 currentMonster++;
-                monsterHealth = 10 * currentMonster;
+                monsterHealth = 6 * currentMonster;
                 document.getElementById("monster").innerText = `レベルアップ！現在のモンスターレベル: ${currentMonster}`;
                 document.getElementById("monster-image").src = monsterImages[currentMonster - 1];
                 updateHealthBar();
