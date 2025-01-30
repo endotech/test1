@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>学習用サイト</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #2c3e50; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            color: #ecf0f1; 
+        }
+        #container { 
+            display: flex; 
+            justify-content: space-around; 
+            width: 90%; 
+            max-width: 1200px; 
+        }
+        #quiz, #monster-container { 
+            width: 45%; 
+            background: #34495e; 
+            padding: 20px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+            border-radius: 10px; 
+        }
+        .question { 
+            font-size: 1.5em; 
+            margin-bottom: 20px; 
+        }
+        .options { 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .options button { 
+            margin: 5px 0; 
+            padding: 10px; 
+            font-size: 1em; 
+            background-color: #1abc9c; 
+            color: #ecf0f1; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            transition: background-color 0.3s ease; 
+        }
+        .options button:hover { 
+            background-color: #16a085; 
+        }
+        .monster { 
+            font-size: 1.2em; 
+            margin: 20px 0; 
+        }
+        .hidden { 
+            display: none; 
+        }
+        .level { 
+            font-size: 1em; 
+        }
+        .health-bar { 
+            width: 100%; 
+            background-color: #ddd; 
+            border-radius: 5px; 
+            overflow: hidden; 
+        }
+        .health { 
+            height: 24px; 
+            background-color: #e74c3c; 
+            width: 100%; 
+            transition: width 0.3s ease; 
+        }
+        #monster-image { 
+            max-width: 100%; 
+            height: auto; 
+            display: block; 
+            margin: 0 auto; 
+            border-radius: 10px; 
+        }
+    </style>
+    <script>
+        let questions = [
+            { question: "木材の細胞であるストロー状のものは何か", options: ["繊維細胞", "STAP細胞", "STEP細胞", "がん細胞"], answer: 0 },
+            { question: "繊維細胞に沿った方向をなんという？", options: ["細胞方向", "繊維方向", "進行方向", "出発進行"], answer: 1 },
+            { question: "独特の香りがする木材で曲げ木スピーカーのうす板に使用したものは？", options: ["スギ", "木炭", "コクタン", "ヒノキ"], answer: 3 },
+            { question: "どっちの方向が割れやすい？", options: ["繊維方向に沿った向き", "繊維方向に直角の向き"], answer: 0 },
+            { question: "両刃のこぎりでは、大きくて台形の刃で切る時はどんなときか？", options: ["繊維方向に沿って切る", "繊維方向に直角にきる", "繊維方向に斜めに切る", "繊維方向に逆向きに切る"], answer: 0 },
+            { question: "繊維方向に沿って切る方法をなんという？", options: ["横びき", "斜めびき", "縦びき", "粗びき"], answer: 2 },
+            { question: "繊維方向に直角に切る方法をなんという？", options: ["横びき", "斜めびき", "縦びき", "粗びき"], answer: 0 },
+            { question: "木材を削るための工作機械をなんという？", options: ["のこぎり", "ベルトサンダー", "ボール盤", "糸のこ"], answer: 1 },
+            { question: "木材に穴をあけるための工作機械をなんという？", options: ["のこぎり", "ベルトサンダー", "ボール盤", "糸のこ"], answer: 2 },
+            { question: "木材に穴をあけるための工具をなんという？", options: ["きり", "ベルトサンダー", "ボール盤", "糸のこ"], answer: 0 },
+            { question: "木材に溝（みぞ）を掘るための工具をなんというか？", options: ["きり", "両刃のこぎり", "のみ", "糸のこ"], answer: 2 },
+            { question: "木材を机に固定するための工具は？", options: ["きり", "両刃のこぎり", "クランプ", "のみ"], answer: 2 },
+            { question: "のみで溝を掘る時に叩く部分は？", options: ["あたま", "かつら", "めがしら", "はな"], answer: 1 },
+            { question: "木材に線をひく作業をなんというか？", options: ["けびき", "けがき", "線引き", "墨ひき"], answer: 1 },
+            { question: "釘を打つための工具をなんという？", options: ["さしがね", "きり", "両刃のこぎり", "げんのう"], answer: 3 },
+            { question: "けがきをするための工具をなんという？", options: ["さしがね", "きり", "両刃のこぎり", "げんのう"], answer: 0 },
+            { question: "けがきで、のこぎりで切断する線をなんという？", options: ["寸法線", "切断線", "切り取り線", "環状線"], answer: 1 },
+            { question: "けがきで、長さをあわせるための線をなんという？", options: ["寸法線", "切断線", "切り取り線", "環状線"], answer: 0 },
+            { question: "「計画」「実行」「評価」「改善」という問題解決の流れを何サイクルという？", options: ["PTSD", "PPAP", "PDCA", "BCAA"], answer: 2 },
+            { question: "釘を打つ前に釘が曲がらないようにあける穴をなんという", options: ["上穴", "横穴", "竪穴", "下穴"], answer: 3 },
+            { question: "人間の創造的活動で作り出されたものをなんという", options: ["共有財産", "知的財産", "金融財産", "思考財産"], answer: 1 },
+            { question: "小説やイラスト、写真、音楽は何の権利で守られているか", options: ["特許権", "商標権", "実用新案権", "著作権"], answer: 3 },
+            { question: "製品に関する発明は何の権利によって守られているか", options: ["特許権", "商標権", "実用新案権", "著作権"], answer: 0 },
+            { question: "情報社会で適切に活動するためのもととなる考え方や態度は？", options: ["情報ルール", "情報マナー", "情報モラル", "情報セキュリティー"], answer: 2 },
+            { question: "のこぎりで木材を切る時に最初に溝をいれる。その溝をなんというか", options: ["ひき溝", "きり溝", "溝きり", "溝ひき"], answer: 0 },
+            { question: "人の顔を勝手にSNSに投稿すると何の権利を侵害することになるか", options: ["著作権", "実用新案権", "商標権", "肖像権"], answer: 3 },
+            { question: "製作品の仕上げに木材の表面をきれいにするために使うものは？", options: ["紙やすり", "きり", "のこぎり", "げんのう"], answer: 0 },
+            { question: "製図の種類として正しいものはどれか", options: ["キャットネコ図", "キャッスル図", "キャビネット図", "クラッカー図"], answer: 2 },
+            { question: "製図の種類として正しいものはどれか", options: ["等角図", "回路図", "頭角図", "方角図"], answer: 0 },
+            { question: "木材の細胞はどのような形状をしているか", options: ["ねじれ", "ストロー", "スプーン", "フォーク"], answer: 1 },
+        ];
+        while (questions.length < 30) { // デモのために同じ質問を複製
+            questions.push(questions[0]);
+        }
+        let currentQuestion = 0;
+        let score = 0;
+        let currentMonster = 1;
+        let monsterHealth = 6;
+        
+        let monsterImages = [
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj6cGdAgHq8lBLnAFNFWm5OTOUtPGWCAl_O5ErV7IfRdoSIk0v9pC_yDQ0rcdpwdqjC9WPnLHz6l7w8Wzi8sOXdYal88LB4ehDR-pir3ryuN80ohoEYuRw_BCYzPt1kwrYxQhdmn1ghso6C/s180-c/kodai_tullimonstrum.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEihmLh3K9GXOhOAsJL1TwoZnRZ_x53JcncpbXeSnxlBvPC3eomzTLMBIdkvNIYtEI7uyxJQP31CKwkCzvyuvRuKs3mUq-jqOKtTdLIxFJ1TKaCgN21pdFAN1lVxWwNPFtBeppQeb3HiiKM/s180-c/fantasy_flatwoods_monster.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi4PSDn7aVuPB77HHjIpooQ_wqcG417qoqx5JbzlhSuM1Y4dHhDKtvfPcIXPQr1ampDa3HxT0y5lUazIbM8eoK6SqtvmLY9-nOP7ZmH8kSSROTUnYyu9aoVgf1bp2ny_A4-ToX2QQK7QdA/s180-c/movie_tokusyu_make.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjSK7Zas8mySiEkUkN-jEJ8uRx-qMosPW60M-OH-FDX-fcALGj4GXNuZRT-z_mjSC92neh0SHT6_SS_Wq8m5pylvRURY67lkWhboIBgbgOYiouPWJlD5XEPtYYyLM1lizsSWvOxXn7RBYM/s180-c/bug_nisehanamaou_kamakiri.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjtzOSh5RtTHz515R23Yc7ROVvVaf91S5y5elKZYjnSAa0bGnfAUjs8Tqg_hQCx25m6iMCTb1eQyKJa_zacaS5z2CYM3ZxBW4wgIo_ISufy24nru8gtfbJSLbPcuWZt9bDBPT1hsk3GNXrU/s180-c/fantasy_dragon_wyvern.png"
+        ];
+        function loadQuestion() {
+            if (currentQuestion < questions.length) {
+                document.getElementById("question").innerText = questions[currentQuestion].question;
+                let options = document.getElementById("options");
+                options.innerHTML = '';
+                for (let i = 0; i < questions[currentQuestion].options.length; i++) {
+                    let option = document.createElement("button");
+                    option.innerText = questions[currentQuestion].options[i];
+                    option.onclick = () => checkAnswer(i);
+                    options.appendChild(option);
+                }
+            } else {
+                let resultMessage = score > 40 ? "すばらしい！" : "";
+                document.getElementById("quiz").innerHTML = `<h2>クイズ終了！最終スコア: ${score}</h2><h3>${resultMessage}</h3><button onclick="restart()">再スタート</button>`;
+            }
+        }
+
+        function checkAnswer(selected) {
+            if (selected === questions[currentQuestion].answer) {
+                score++;
+                monsterHealth--;
+                updateHealthBar();
+                if (monsterHealth <= 0) {
+                    currentMonster++;
+                    if (currentMonster <= 5) {
+                        monsterHealth = 10 * currentMonster; // モンスターの体力が増加
+                        document.getElementById("monster").innerText = `モンスターを倒した！次はモンスターレベル${currentMonster}！`;
+                        document.getElementById("monster-image").src = monsterImages[currentMonster - 1];
+                        updateHealthBar();
+                    } else {
+                        let resultMessage = score > 40 ? "すばらしい！" : "";
+                        document.getElementById("quiz").innerHTML = `<h2>クイズ終了！最終スコア: ${score}</h2><h3>${resultMessage}</h3><button onclick="restart()">再スタート</button>`;
+                        return;
+                    }
+                } else {
+                    document.getElementById("monster").innerText = `モンスターの残り体力: ${monsterHealth}`;
+                }
+            }
+            currentQuestion++;
+            if (currentQuestion % 10 === 0 && currentMonster < 5) {
+                currentMonster++;
+                monsterHealth = 10 * currentMonster;
+                document.getElementById("monster").innerText = `レベルアップ！現在のモンスターレベル: ${currentMonster}`;
+                document.getElementById("monster-image").src = monsterImages[currentMonster - 1];
+                updateHealthBar();
+            }
+            loadQuestion();
+        }
+
+        function updateHealthBar() {
+            let healthPercentage = (monsterHealth / (10 * currentMonster)) * 100;
+            document.getElementById("health").style.width = healthPercentage + '%';
+        }
+
+        function restart() {
+            currentQuestion = 0;
+            score = 0;
+            currentMonster = 1;
+            monsterHealth = 10;
+            document.getElementById("monster-image").src = monsterImages[0];
+            loadQuestion();
+            document.getElementById("monster").innerText = `モンスターの体力: ${monsterHealth}`;
+            updateHealthBar();
+        }
+
+        window.onload = function() {
+            document.getElementById("monster-image").src = monsterImages[0];
+            loadQuestion();
+            updateHealthBar();
+            playBGM();
+        }
+
+        function playBGM() {
+            let audio = new Audio('music.mp3');
+            audio.loop = true;
+            audio.play();
+        }
+    </script>
+</head>
+<body>
+    <div id="container">
+        <div id="quiz">
+            <div id="question" class="question"></div>
+            <div id="options" class="options"></div>
+        </div>
+        <div id="monster-container">
+            <img id="monster-image" class="monster" src="" alt="モンスター画像">
+            <div id="monster" class="monster">モンスターの体力: 6</div>
+            <div class="health-bar">
+                <div id="health" class="health"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
